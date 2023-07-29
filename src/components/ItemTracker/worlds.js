@@ -14,4 +14,11 @@ export default {
     },
     'x-ray': 'beam-burst',
   },
+  vitality: {
+    _packs: {
+      missile: 2,
+      'super-missile': 1,
+      'power-bomb': 1,
+    },
+  },
 }
