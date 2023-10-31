@@ -1,17 +1,30 @@
 <template>
   <div :class="`grid-tracker smi-tracker ${controlled ? '-controlled' : ''}`">
     <div v-for="(row, i) in prepped_rows" :key="i" class="grid-tracker__row">
-      <div v-for="col in row" :key="col.id" v-bind="col.attrs" @click="(e) => click(e, col)">
-        <div v-if="col.numbers" class="grid-tracker__numbers">
-          <div v-for="(cls, j) in col.numbers" :key="j" :class="cls" />
+      <template v-for="col in row" :key="col.slug">
+        <sm-cwisp-tracker
+          v-if="col.slug === 'cwisp'"
+          :inventory="inventory"
+          @toggle-item="i => $emit('toggle-item', i)"
+        />
+        <div v-else v-bind="col.attrs" @click="(e) => click(e, col)">
+          <div v-if="col.numbers" class="grid-tracker__numbers">
+            <div v-for="(cls, j) in col.numbers" :key="j" :class="cls" />
+          </div>
         </div>
-      </div>
+      </template>
     </div>
   </div>
 </template>
 
 <script>
 import worlds from './worlds'
+
+const kebabCase = string => string
+    .replace(/([a-z])([A-Z])/g, "$1-$2")
+    .replace(/[\s_]+/g, '-')
+    .toLowerCase()
+
 const rows = [
   ['energy-tank', 'reserve-tank', 'missile', 'super-missile', 'power-bomb'],
   ['charge-beam', 'ice-beam', 'wave-beam', 'spazer-beam', 'plasma-beam'],
@@ -19,6 +32,19 @@ const rows = [
   ['bomb', 'gravity-suit', 'ridley', 'speed-booster', 'screw-attack'],
   ['grappling-beam', 'kraid', 'phantoon', 'draygon', 'x-ray'],
 ]
+
+const cwisp_4_cols = [
+  ['cwisp', 'morph-ball', 'bomb', 'spring-ball'],
+  ['hi-jump-boots', 'speed-booster', 'space-jump', 'screw-attack'],
+  ['varia-suit', 'ridley', 'gravity-suit'],
+  ['kraid', 'phantoon', 'draygon'],
+]
+
+const cwisp_5_cols = [
+  ['cwisp', 'morph-ball', 'bomb', 'spring-ball', 'varia-suit'],
+  ['hi-jump-boots', 'speed-booster', 'space-jump', 'screw-attack', 'gravity-suit'],
+]
+
 const packs = rows[0]
 
 const getNumbers = (value, multiplier) => {
@@ -40,35 +66,61 @@ const getIcon = (slug, value) => {
   return [`sm-item -${slug}`, !value && '-has-not']
 }
 
+const VANILLA = {
+  'kill kraid': true,
+  'kill phantoon': true,
+  'kill draygon': true,
+  'kill ridley': true,
+  kraid: true,
+  phantoon: true,
+  draygon: true,
+  ridley: true,
+}
+
+const removeVanilla = (rows) => rows.map(r => r.filter(slug => !VANILLA[slug]))
+
 export default {
   props: {
     inventory: Object,
     controlled: Boolean,
-    compact: Boolean,
+    mode: String,
     rows: Array,
     world: String,
+    objectives: Object,
   },
-  emits: ['add-item', 'toggle-item'],
+  emits: ['add-item', 'toggle-item', 'toggle-objective'],
   computed: {
+    vanilla_objectives() {
+      const objective_ids = Object.keys(this.objectives || {})
+      return !objective_ids.find(o => !VANILLA[o])
+    },
     row_slugs() {
       if (this.rows) {
         return this.rows
       }
-      let row_slugs = rows.slice().map((r) => r.slice())
+      let row_slugs = rows.map((r) => r.slice())
       const world_options = worlds[this.world]
-      if (world_options) {
-        row_slugs = row_slugs.map((row) => row.map((slug) => world_options[slug] || slug))
-      }
-      if (this.compact) {
+      if (this.mode === 'cwisp') {
+        if (this.vanilla_objectives) {
+          row_slugs = cwisp_4_cols.map(r => r.slice())
+        } else if (Object.keys(this.objectives || {}).length <= 6) {
+          row_slugs = removeVanilla(cwisp_4_cols)
+        } else {
+          row_slugs = cwisp_5_cols.map(r => r.slice())
+        }
+      } else if (this.mode === 'compact') {
         row_slugs[4].pop() // grappling-beam
         row_slugs[4].shift() // x-ray
         row_slugs.shift() // pack items
+      }
+      if (world_options) {
+        row_slugs = row_slugs.map((row) => row.map((slug) => world_options[slug] || slug))
       }
       return row_slugs
     },
     prepped_rows() {
       const world_options = worlds[this.world] || worlds.default
-      return this.row_slugs.map((row) =>
+      const rows = this.row_slugs.map((row) =>
         row.map((slug) => {
           const value = this.inventory[slug]
           return {
@@ -81,11 +133,38 @@ export default {
           }
         }),
       )
+      if (this.mode === 'cwisp' && !this.vanilla_objectives) {
+        let row_index = 2
+        const objective_ids = Object.keys(this.objectives || {})
+        const per_row = objective_ids.length > 15 ? 6 : rows[0].length
+
+        while (objective_ids.length > 0) {
+          while (rows[row_index]?.length >= per_row) {
+            row_index ++
+          }
+          if (!rows[row_index]) {
+            rows.push([])
+          }
+          const slug = objective_ids.shift()
+          const cased = kebabCase(slug)
+          rows[row_index].push({
+            slug,
+            type: 'objective',
+            attrs: {
+              class: `smv-objective -${cased} -${this.objectives[slug] ? 'in' : ''}active`,
+              id: `grid-tracker__${cased}`
+            }
+          })
+        }
+      }
+      return rows
     },
   },
   methods: {
-    click(e, { slug }) {
-      if (packs.includes(slug)) {
+    click(e, { slug, type }={}) {
+      if (type === 'objective') {
+        this.$emit('toggle-objective', slug);
+      } else if (packs.includes(slug)) {
         const amount = e.shiftKey || e.ctrlKey ? -1 : 1
         this.$emit('add-item', slug, amount)
       } else {

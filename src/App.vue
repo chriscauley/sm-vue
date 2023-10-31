@@ -1,5 +1,63 @@
 <template>
   <div>
+    <div style="font-size: 64px;">
+      <sm-cwisp-tracker :inventory="inventory" @toggle-item="toggle" />
+    </div>
+    <div class="flex">
+    <div>
+      <h2>Grid + Cwisp</h2>
+      <sm-item-tracker
+        format="grid"
+        :inventory="inventory"
+        @toggle-item="toggle"
+        @add-item="add"
+        :width="300"
+        :world="world"
+        mode="cwisp"
+      />
+    </div>
+    <div>
+      <h2>Grid + Cwisp + 1 obj</h2>
+      <sm-item-tracker
+        format="grid"
+        :inventory="inventory"
+        @toggle-objective="toggleObjective"
+        @toggle-item="toggle"
+        @add-item="add"
+        :width="300"
+        :world="world"
+        mode="cwisp"
+        :objectives="getObjectives(1)"
+      />
+    </div>
+    <div>
+      <h2>Grid + Cwisp + 7 obj</h2>
+      <sm-item-tracker
+        format="grid"
+        :inventory="inventory"
+        @toggle-objective="toggleObjective"
+        @toggle-item="toggle"
+        @add-item="add"
+        :width="300"
+        :world="world"
+        mode="cwisp"
+        :objectives="getObjectives(7)"
+      />
+    </div>
+    <div>
+      <h2>Grid + Cwisp + 18 obj</h2>
+      <sm-item-tracker
+        format="grid"
+        :inventory="inventory"
+        @toggle-objective="toggleObjective"
+        @toggle-item="toggle"
+        @add-item="add"
+        :width="300"
+        :world="world"
+        mode="cwisp"
+        :objectives="getObjectives(18)"
+      />
+    </div>
     <div>
       <h2>Grid</h2>
       <sm-item-tracker
@@ -11,16 +69,18 @@
         :world="world"
       />
     </div>
+    </div>
     <div>
       <h2>Grid + Compact</h2>
       <sm-item-tracker
         format="grid"
-        :compact="true"
+        mode="compact"
         :inventory="inventory"
         @toggle-item="toggle"
         @add-item="add"
         :width="300"
         :world="world"
+        :objectives="['kill the orange geemer']"
       />
     </div>
     <div>
@@ -50,11 +110,44 @@
 </template>
 
 <script>
+const objectives = [
+  'kill the orange geemer',
+  'tickle the red fish',
+  'clear crateria',
+  'kill ridley',
+  'explore kraids lair',
+  'kill three g 4',
+  'kill botwoon',
+  'kill golden torizo',
+  'activate chozo robots',
+  'collect-25-items',
+  'visit the animals',
+  'kill kraid',
+  'kill three minibosses',
+  'explore 75 map',
+  'explore west maridia',
+  'kill spore spawn',
+  'kill king cacatac',
+  'collect all upgrades'
+]
+
 export default {
   data() {
-    return { inventory: {}, world: 'nature' }
+    return {
+      inventory: {},
+      world: 'nature',
+      objectives:Object.fromEntries(objectives.map((o) => [o, false])),
+    }
   },
   methods: {
+    getObjectives(count) {
+      return Object.fromEntries(
+        objectives.slice(0, count).map(slug => [slug, this.objectives[slug]]),
+      )
+    },
+    toggleObjective(slug) {
+      this.objectives[slug] = !this.objectives[slug]
+    },
     toggle(slug) {
       this.inventory[slug] = !this.inventory[slug]
     },

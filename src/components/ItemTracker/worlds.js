@@ -21,4 +21,9 @@ export default {
       'power-bomb': 1,
     },
   },
+  ascent: {
+    'spring-ball': 'boost-ball',
+    draygon: 'weapons-tank',
+    'x-ray': 'shinespark',
+  },
 }
