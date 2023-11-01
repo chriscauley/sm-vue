@@ -1,74 +1,76 @@
 <template>
   <div>
-    <div style="font-size: 64px;">
+    <div style="font-size: 64px">
       <sm-cwisp-tracker :inventory="inventory" @toggle-item="toggle" />
     </div>
     <div class="flex">
-    <div>
-      <h2>Grid + Cwisp</h2>
-      <sm-item-tracker
-        format="grid"
-        :inventory="inventory"
-        @toggle-item="toggle"
-        @add-item="add"
-        :width="300"
-        :world="world"
-        mode="cwisp"
-      />
-    </div>
-    <div>
-      <h2>Grid + Cwisp + 1 obj</h2>
-      <sm-item-tracker
-        format="grid"
-        :inventory="inventory"
-        @toggle-objective="toggleObjective"
-        @toggle-item="toggle"
-        @add-item="add"
-        :width="300"
-        :world="world"
-        mode="cwisp"
-        :objectives="getObjectives(1)"
-      />
-    </div>
-    <div>
-      <h2>Grid + Cwisp + 7 obj</h2>
-      <sm-item-tracker
-        format="grid"
-        :inventory="inventory"
-        @toggle-objective="toggleObjective"
-        @toggle-item="toggle"
-        @add-item="add"
-        :width="300"
-        :world="world"
-        mode="cwisp"
-        :objectives="getObjectives(7)"
-      />
-    </div>
-    <div>
-      <h2>Grid + Cwisp + 18 obj</h2>
-      <sm-item-tracker
-        format="grid"
-        :inventory="inventory"
-        @toggle-objective="toggleObjective"
-        @toggle-item="toggle"
-        @add-item="add"
-        :width="300"
-        :world="world"
-        mode="cwisp"
-        :objectives="getObjectives(18)"
-      />
-    </div>
-    <div>
-      <h2>Grid</h2>
-      <sm-item-tracker
-        format="grid"
-        :inventory="inventory"
-        @toggle-item="toggle"
-        @add-item="add"
-        :width="300"
-        :world="world"
-      />
-    </div>
+      <div>
+        <h2>Grid + Cwisp</h2>
+        <sm-item-tracker
+          format="grid"
+          :inventory="inventory"
+          @toggle-item="toggle"
+          @add-item="add"
+          :width="300"
+          :world="world"
+          mode="cwisp"
+        />
+      </div>
+      <div>
+        <h2>Grid + Cwisp + 1 obj</h2>
+        <sm-item-tracker
+          format="grid"
+          :inventory="inventory"
+          @toggle-objective="toggleObjective"
+          @toggle-item="toggle"
+          @add-item="add"
+          :width="300"
+          :world="world"
+          mode="cwisp"
+          :objectives="getObjectives(1)"
+        />
+      </div>
+      <div>
+        <h2>Grid + Cwisp + 8 obj</h2>
+        <sm-item-tracker
+          format="grid"
+          :inventory="inventory"
+          @toggle-objective="toggleObjective"
+          @toggle-item="toggle"
+          @add-item="add"
+          :width="300"
+          :world="world"
+          mode="cwisp"
+          :objectives="getObjectives(8)"
+        />
+      </div>
+      <div>
+        <h2>Grid + Cwisp + 18 obj</h2>
+        <sm-item-tracker
+          format="grid"
+          :inventory="inventory"
+          @toggle-objective="toggleObjective"
+          @toggle-item="toggle"
+          @add-item="add"
+          :width="300"
+          :world="world"
+          mode="cwisp"
+          :objectives="getObjectives(18)"
+        />
+      </div>
+      <div>
+        <h2>Grid</h2>
+        <sm-item-tracker
+          format="grid"
+          :inventory="inventory"
+          @toggle-item="toggle"
+          @toggle-objective="toggleObjective"
+          @add-item="add"
+          :width="300"
+          :world="world"
+          :objectives="getObjectives(18)"
+        />
+      </div>
     </div>
     <div>
       <h2>Grid + Compact</h2>
@@ -80,7 +82,6 @@
         @add-item="add"
         :width="300"
         :world="world"
-        :objectives="['kill the orange geemer']"
       />
     </div>
     <div>
@@ -128,7 +129,7 @@ const objectives = [
   'explore west maridia',
   'kill spore spawn',
   'kill king cacatac',
-  'collect all upgrades'
+  'collect all upgrades',
 ]
 
 export default {
@@ -136,13 +137,13 @@ export default {
     return {
       inventory: {},
       world: 'nature',
-      objectives:Object.fromEntries(objectives.map((o) => [o, false])),
+      objectives: Object.fromEntries(objectives.map((o) => [o, false])),
     }
   },
   methods: {
     getObjectives(count) {
       return Object.fromEntries(
-        objectives.slice(0, count).map(slug => [slug, this.objectives[slug]]),
+        objectives.slice(0, count).map((slug) => [slug, this.objectives[slug]]),
       )
     },
     toggleObjective(slug) {

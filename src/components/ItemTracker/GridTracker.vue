@@ -5,7 +5,7 @@
         <sm-cwisp-tracker
           v-if="col.slug === 'cwisp'"
           :inventory="inventory"
-          @toggle-item="i => $emit('toggle-item', i)"
+          @toggle-item="(i) => $emit('toggle-item', i)"
         />
         <div v-else v-bind="col.attrs" @click="(e) => click(e, col)">
           <div v-if="col.numbers" class="grid-tracker__numbers">
@@ -20,8 +20,9 @@
 <script>
 import worlds from './worlds'
 
-const kebabCase = string => string
-    .replace(/([a-z])([A-Z])/g, "$1-$2")
+const kebabCase = (string) =>
+  string
+    .replace(/([a-z])([A-Z])/g, '$1-$2')
     .replace(/[\s_]+/g, '-')
     .toLowerCase()
 
@@ -77,7 +78,7 @@ const VANILLA = {
   ridley: true,
 }
 
-const removeVanilla = (rows) => rows.map(r => r.filter(slug => !VANILLA[slug]))
+const removeVanilla = (rows) => rows.map((r) => r.filter((slug) => !VANILLA[slug]))
 
 export default {
   props: {
@@ -92,7 +93,7 @@ export default {
   computed: {
     vanilla_objectives() {
       const objective_ids = Object.keys(this.objectives || {})
-      return !objective_ids.find(o => !VANILLA[o])
+      return !objective_ids.find((o) => !VANILLA[o])
     },
     row_slugs() {
       if (this.rows) {
@@ -102,11 +103,11 @@ export default {
       const world_options = worlds[this.world]
       if (this.mode === 'cwisp') {
         if (this.vanilla_objectives) {
-          row_slugs = cwisp_4_cols.map(r => r.slice())
+          row_slugs = cwisp_4_cols.map((r) => r.slice())
         } else if (Object.keys(this.objectives || {}).length <= 6) {
-          row_slugs = removeVanilla(cwisp_4_cols)
+          row_slugs = cwisp_4_cols
         } else {
-          row_slugs = cwisp_5_cols.map(r => r.slice())
+          row_slugs = cwisp_5_cols.map((r) => r.slice())
         }
       } else if (this.mode === 'compact') {
         row_slugs[4].pop() // grappling-beam
@@ -115,6 +116,9 @@ export default {
       }
       if (world_options) {
         row_slugs = row_slugs.map((row) => row.map((slug) => world_options[slug] || slug))
+      }
+      if (!this.vanilla_objectives) {
+        row_slugs = removeVanilla(row_slugs)
       }
       return row_slugs
     },
@@ -133,14 +137,20 @@ export default {
           }
         }),
       )
-      if (this.mode === 'cwisp' && !this.vanilla_objectives) {
-        let row_index = 2
+      if (!this.vanilla_objectives) {
         const objective_ids = Object.keys(this.objectives || {})
         const per_row = objective_ids.length > 15 ? 6 : rows[0].length
+        if (!this.mode) {
+          rows[3].push(...rows.pop())
+        }
+        let row_index = rows.findIndex((r) => r.length < rows[0].length)
+        if (row_index === -1) {
+          row_index = rows.length
+        }
 
         while (objective_ids.length > 0) {
           while (rows[row_index]?.length >= per_row) {
-            row_index ++
+            row_index++
           }
           if (!rows[row_index]) {
             rows.push([])
@@ -152,8 +162,8 @@ export default {
             type: 'objective',
             attrs: {
               class: `smv-objective -${cased} -${this.objectives[slug] ? 'in' : ''}active`,
-              id: `grid-tracker__${cased}`
-            }
+              id: `grid-tracker__${cased}`,
+            },
           })
         }
       }
@@ -161,9 +171,9 @@ export default {
     },
   },
   methods: {
-    click(e, { slug, type }={}) {
+    click(e, { slug, type } = {}) {
       if (type === 'objective') {
-        this.$emit('toggle-objective', slug);
+        this.$emit('toggle-objective', slug)
       } else if (packs.includes(slug)) {
         const amount = e.shiftKey || e.ctrlKey ? -1 : 1
         this.$emit('add-item', slug, amount)
