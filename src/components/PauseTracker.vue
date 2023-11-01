@@ -1,5 +1,5 @@
 <template>
-  <div :class="wrapper_class">
+  <div :class="wrapper_class" :style="style">
     <div v-for="group in groups" :key="group.name" :class="group.class">
       <div v-for="(child, i) in group.children" :key="i" v-bind="child" />
     </div>
@@ -47,6 +47,7 @@ export default {
     inventory: Object,
     controlled: Boolean,
     world: String,
+    width: Number,
   },
   emits: ['add-item', 'toggle-item'],
   computed: {
@@ -146,6 +147,9 @@ export default {
           onclick: () => this.$emit('toggle-item', item),
         })),
       }))
+    },
+    style() {
+      return this.width && { '--inventory-px': `${this.width / 256}px` }
     },
   },
 }

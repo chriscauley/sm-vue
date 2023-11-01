@@ -6,8 +6,7 @@
     <div class="flex">
       <div>
         <h2>Grid + Cwisp</h2>
-        <sm-item-tracker
-          format="grid"
+        <sm-grid-tracker
           :inventory="inventory"
           @toggle-item="toggle"
           @add-item="add"
@@ -18,8 +17,7 @@
       </div>
       <div>
         <h2>Grid + Cwisp + 1 obj</h2>
-        <sm-item-tracker
-          format="grid"
+        <sm-grid-tracker
           :inventory="inventory"
           @toggle-objective="toggleObjective"
           @toggle-item="toggle"
@@ -32,8 +30,7 @@
       </div>
       <div>
         <h2>Grid + Cwisp + 8 obj</h2>
-        <sm-item-tracker
-          format="grid"
+        <sm-grid-tracker
           :inventory="inventory"
           @toggle-objective="toggleObjective"
           @toggle-item="toggle"
@@ -46,8 +43,7 @@
       </div>
       <div>
         <h2>Grid + Cwisp + 18 obj</h2>
-        <sm-item-tracker
-          format="grid"
+        <sm-grid-tracker
           :inventory="inventory"
           @toggle-objective="toggleObjective"
           @toggle-item="toggle"
@@ -60,8 +56,8 @@
       </div>
       <div>
         <h2>Grid</h2>
-        <sm-item-tracker
-          format="grid"
+        <sm-grid-tracker
+          mode="grid"
           :inventory="inventory"
           @toggle-item="toggle"
           @toggle-objective="toggleObjective"
@@ -74,8 +70,7 @@
     </div>
     <div>
       <h2>Grid + Compact</h2>
-      <sm-item-tracker
-        format="grid"
+      <sm-grid-tracker
         mode="compact"
         :inventory="inventory"
         @toggle-item="toggle"
@@ -86,8 +81,7 @@
     </div>
     <div>
       <h2>Pause Inventory</h2>
-      <sm-item-tracker
-        format="pause"
+      <sm-pause-tracker
         :inventory="inventory"
         @toggle-item="toggle"
         @add-item="add"
@@ -97,8 +91,7 @@
     </div>
     <div>
       <h2>Pause Inventory + controlled</h2>
-      <sm-item-tracker
-        format="pause"
+      <sm-pause-tracker
         :controlled="true"
         :inventory="inventory"
         @toggle-item="toggle"

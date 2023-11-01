@@ -1,5 +1,5 @@
 <template>
-  <div :class="`grid-tracker smi-tracker ${controlled ? '-controlled' : ''}`">
+  <div :class="`grid-tracker smi-tracker ${controlled ? '-controlled' : ''}`" :style="style">
     <div v-for="(row, i) in prepped_rows" :key="i" class="grid-tracker__row">
       <template v-for="col in row" :key="col.slug">
         <sm-cwisp-tracker
@@ -88,6 +88,7 @@ export default {
     rows: Array,
     world: String,
     objectives: Object,
+    width: Number,
   },
   emits: ['add-item', 'toggle-item', 'toggle-objective'],
   computed: {
@@ -122,6 +123,10 @@ export default {
       }
       return row_slugs
     },
+    columns() {
+      const objective_ids = Object.keys(this.objectives || {})
+      return objective_ids.length > 15 ? 6 : this.row_slugs[0].length
+    },
     prepped_rows() {
       const world_options = worlds[this.world] || worlds.default
       const rows = this.row_slugs.map((row) =>
@@ -139,7 +144,7 @@ export default {
       )
       if (!this.vanilla_objectives) {
         const objective_ids = Object.keys(this.objectives || {})
-        const per_row = objective_ids.length > 15 ? 6 : rows[0].length
+        const { columns } = this
         if (!this.mode) {
           rows[3].push(...rows.pop())
         }
@@ -149,7 +154,7 @@ export default {
         }
 
         while (objective_ids.length > 0) {
-          while (rows[row_index]?.length >= per_row) {
+          while (rows[row_index]?.length >= columns) {
             row_index++
           }
           if (!rows[row_index]) {
@@ -169,6 +174,17 @@ export default {
       }
       return rows
     },
+    style() {
+      const { width } = this
+      if (!width) {
+        return {}
+      }
+      const columns = this.columns + 2 * 0.2 + 4 * 0.1 // number of columns + padding + gap
+
+      return {
+        fontSize: `${width / columns}px`, 
+      }
+    }
   },
   methods: {
     click(e, { slug, type } = {}) {

@@ -1,10 +1,14 @@
-import ItemTracker from './ItemTracker/index.vue'
+import GridTracker from './GridTracker.vue'
+import PauseTracker from './PauseTracker.vue'
 import CwispTracker from './CwispTracker.vue'
 
 export default {
-  ItemTracker,
+  GridTracker,
+  PauseTracker,
+  CwispTracker,
   install(app) {
-    app.component('SmItemTracker', ItemTracker)
+    app.component('SmGridTracker', GridTracker)
+    app.component('SmPauseTracker', PauseTracker)
     app.component('SmCwispTracker', CwispTracker)
   },
 }
